@@ -1,0 +1,6 @@
+[package]
+name = "calibration"
+version = "0.1.0"
+authors = ["Samuel Coleman <samuel@seenet.ca>"]
+
+[dependencies]
