@@ -1,14 +1,12 @@
 use std::io::{stdin, BufRead};
 
 fn main() {
-    let mut last_max = 0;
+    let mut elves = Vec::new();
     let mut current = 0;
 
     for line in stdin().lock().lines().map(|line| line.unwrap()) {
         if line == "" {
-            if current > last_max {
-                last_max = current;
-            }
+            elves.push(current);
             current = 0;
 
             continue;
@@ -17,5 +15,13 @@ fn main() {
         current += line.parse::<i32>().unwrap();
     }
 
-    println!("{}", last_max);
+    elves.sort();
+    elves.reverse();
+
+    println!("The snackiest elf is holding {} Calories.", elves[0]);
+
+    println!(
+        "The top three snackiest elves are collectively carrying {} Calories.",
+        elves.iter().take(3).sum::<i32>(),
+    );
 }
