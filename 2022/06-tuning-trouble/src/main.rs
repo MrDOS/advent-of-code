@@ -1,29 +1,43 @@
-use std::{collections::HashSet, io::stdin};
+use std::{collections::HashSet, hash::Hash, io::stdin};
 
-const MARKER_LENGTH: usize = 4;
+const PACKET_MARKER_LENGTH: usize = 4;
+const MESSAGE_MARKER_LENGTH: usize = 14;
+
+fn find_end_of_unique_run<T>(elements: &Vec<T>, run_length: usize) -> Option<usize>
+where
+    T: Eq,
+    T: Hash,
+{
+    let mut observed_elements: HashSet<&T> = HashSet::new();
+
+    for i in run_length..=elements.len() {
+        for j in i - run_length..i {
+            observed_elements.insert(&elements[j]);
+        }
+
+        if observed_elements.len() == run_length {
+            return Option::Some(i);
+        }
+
+        observed_elements.clear();
+    }
+
+    return Option::None;
+}
 
 fn main() {
-    let mut marker_chars: HashSet<char> = HashSet::new();
-
     for signal in stdin()
         .lines()
         .map(|line| line.unwrap().chars().collect::<Vec<_>>())
     {
-        for i in MARKER_LENGTH..=signal.len() {
-            for j in i - MARKER_LENGTH..i {
-                marker_chars.insert(signal[j]);
-            }
+        match find_end_of_unique_run(&signal, PACKET_MARKER_LENGTH) {
+            Some(end) => println!("First start-of-packet marker after character {}", end),
+            _ => (),
+        };
 
-            if marker_chars.len() == MARKER_LENGTH {
-                println!("{}", i);
-                break;
-            }
-
-            marker_chars.clear();
-        }
-
-        if marker_chars.len() > 0 {
-            marker_chars.clear();
-        }
+        match find_end_of_unique_run(&signal, MESSAGE_MARKER_LENGTH) {
+            Some(end) => println!("First start-of-message marker after character {}", end),
+            _ => (),
+        };
     }
 }
